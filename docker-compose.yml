@@ -1,0 +1,39 @@
+version: '2'
+
+services:
+  db:
+    container_name: 'container_lista'
+    image: mysql
+    command: --default-authentication-plugin=mysql_native_password 
+    restart: always
+    ports: 
+      - '3310:3306'
+    environment: 
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=lista
+  app: 
+    build: ./lista2
+    container_name: 'container_app'
+    volumes: 
+      - .:/src/app
+    depends_on: 
+      - db
+    ports: 
+      - '3000:3000'
+    
+  web:
+    build: ./front
+    volumes: 
+      - .:/var/www/html
+    ports: 
+      - 8080:8080
+    links:
+      - db
+    depends_on: 
+      - db
+      - app   
+    command: ['npm','run','serve']
+
+      
+
+  
